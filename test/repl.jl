@@ -348,7 +348,6 @@ end
 test_complete(s) = Pkg.REPLMode.completions(s,lastindex(s))
 apply_completion(str) = begin
     c, r, s = test_complete(str)
-    @test s == true
     str[1:prevind(str, first(r))]*first(c)
 end
 
@@ -413,8 +412,11 @@ temp_pkg_dir() do project_path; cd(project_path) do
     @test !("REPL" in c)
 
     mkdir("testdir")
-    c, r = test_complete("add ./")
+    c, r = test_complete("add ")
     @test "testdir/" in c
+    @test "Example" in c
+    @test apply_completion("add tes") == "add testdir/"
+    @test apply_completion("add ./tes") == "add ./testdir/"
     c, r = test_complete("dev ./")
     @test "testdir/" in c
 end end
